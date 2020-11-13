@@ -1,16 +1,12 @@
 package com.SocketEndpoint;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.net.SocketException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.websocket.OnClose;
@@ -21,13 +17,10 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.DAO.Connector;
 import com.DAO.UserDAO;
 import com.Model.User;
 import com.Util.TagName;
@@ -38,24 +31,32 @@ public class SocketService {
 	
 	@OnOpen
 	public void handleOpen(Session userSession, @PathParam("username") String username, @PathParam("password") String password){
+		
 		UserDAO userDAO = new UserDAO();
-		User user = userDAO.getUser(username, password);
+		User user = userDAO.login(username, password);
+		//if login false
 		if(user == null){
 			try {		
-				userSession.getBasicRemote().sendText("\"tag\":"+ TagName.getLoginFalse());
+				JSONObject response = new JSONObject();
+				response.put("tag", TagName.getLoginFalse());
+				userSession.getBasicRemote().sendText(response.toString());
 				userSession.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println(e);
 			}
 		}
+		//login success
 		else{
 			//add info user here
+			user.setStatus("online");
 			userSession.getUserProperties().put("user", user);
 			
 			//response
 			try {
 				//response to user
-				userSession.getBasicRemote().sendText("\"tag\":"+ TagName.getLoginSuccess());
+				JSONObject response = new JSONObject();
+				response.put("tag", TagName.getLoginSuccess());
+				userSession.getBasicRemote().sendText(response.toString());
 				
 				//add user
 				addOrRemoveUser("add", userSession);
@@ -68,7 +69,55 @@ public class SocketService {
 	
 	@OnMessage
 	public void handleMessage(String message, Session userSession) throws IOException{
-		
+		try {
+			JSONObject data = (JSONObject) new JSONParser().parse(message);
+			
+			//if userA invite userB
+			if(data.get("tag").equals(TagName.getRequestCompare())){
+				int idUserB = Integer.parseInt((data.get("idUserB").toString()));
+				Session userBSession = getUserByID(idUserB);
+				HandleMessage.handleRequestCompare(userSession, userBSession);
+				
+			}
+			//if userB accept invite from userA
+			else if(data.get("tag").equals(TagName.getAcceptInvite())){
+				int idUserA = (Integer) Integer.parseInt((data.get("idUserA").toString()));
+				Session userASession = getUserByID(idUserA);
+				HandleMessage.handleAcceptInvite(userASession, userSession);
+			}
+			//if userB refuse invite from userA
+			else if(data.get("tag").equals(TagName.getRefuseInvite())){
+				int idUserA = (Integer) Integer.parseInt((data.get("idUserA").toString()));
+				Session userASession = getUserByID(idUserA);
+				HandleMessage.handleRefuseInvite(userASession);
+			}
+			else if(data.get("tag") == "<>"){
+				
+			}
+			else if(data.get("tag") == "<>"){
+				
+			}
+			else if(data.get("tag") == "<>"){
+				
+			}
+			
+			//if userA complete game
+			else if(data.get("tag").equals(TagName.getCompleteGame())){
+				
+			}
+			
+			//if userA defeat game
+			else if(data.get("tag").equals(TagName.getDefeatGame())){
+				
+			}
+			
+			//if userA want rematch game
+			else if(data.get("tag").equals(TagName.getRematchGame())){
+				
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@OnClose
@@ -82,6 +131,10 @@ public class SocketService {
 	}
 	
 	
+	
+	//method handle area
+	
+	
 	private void addOrRemoveUser(String code, Session userSession){
 		if(code == "add"){
 			users_online.add(userSession);
@@ -91,7 +144,7 @@ public class SocketService {
 		}
 		
 		//send update users list to users
-		JSONObject usersList = userListJSON();
+		JSONObject usersList = userListToJSON();
 		usersList.put("tag", TagName.getUpdateUsers());
 		for(Session session : users_online){
 			try {
@@ -103,7 +156,8 @@ public class SocketService {
 		}
 	}
 	
-	private JSONObject userListJSON(){
+	//change list users online to json
+	private JSONObject userListToJSON(){
 		List<User> users = new ArrayList<User>();
 		for(Session session : users_online){
 			users.add((User) session.getUserProperties().get("user"));
@@ -113,6 +167,19 @@ public class SocketService {
 		json.put("users", users);
 			
 		return json;	
+	}
+	
+	//get user in list users online
+	private Session getUserByID(int id){
+		Session userB = null;
+		for(Session session: users_online){
+			User usr = (User) session.getUserProperties().get("user");
+			if(usr.getId() == id && usr.getStatus() == "online"){
+				userB = session;
+				break;	
+			}
+		}
+		return userB;
 	}
 	
 }

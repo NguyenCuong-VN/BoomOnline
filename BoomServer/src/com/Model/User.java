@@ -6,6 +6,7 @@ public class User {
 	private String username;
 	private String password;
 	private int point;
+	private String status = "offline";   //false: offline,  online: online,  [time]: ingame
 	
 
 	public User() {
@@ -23,17 +24,24 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "{\"id\":" + this.id + ", \"name\":\"" + this.name + "\", \"point\":" + this.point + "}";
+		String stt;
+		if(this.status == "offline") stt = "offline";
+		else if(this.status == "online") stt = "online";
+		else stt = "ingame";
+		
+		return "{\"id\":" + this.id + ", \"name\":\"" + this.name + "\", \"point\":" + this.point + ", \"status\":\"" + stt + "\"}";
 	}
 	
 	
-	
-	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public int getId() {
 		return id;
 	}
-
-
 	public void setId(int id) {
 		this.id = id;
 	}
