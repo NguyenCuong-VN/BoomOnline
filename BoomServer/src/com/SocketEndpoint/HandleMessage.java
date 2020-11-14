@@ -1,11 +1,14 @@
 package com.SocketEndpoint;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import javax.websocket.Session;
 
 import org.json.simple.JSONObject;
 
+import com.DAO.HistoryDAO;
+import com.DAO.UserDAO;
 import com.Model.User;
 import com.Util.Cryptor;
 import com.Util.TagName;
@@ -49,8 +52,12 @@ public class HandleMessage {
 		userA.setStatus(time);
 		userB.setStatus(time);
 		
-		//create data game
+		//save history to database
+		HistoryDAO history = new HistoryDAO();
+		int idHis = history.createHistory(userA.getId(), userB.getId(), userA.getName(), userB.getName(), time);
 		
+		//create data game
+
 		
 		//send
 		try {		
@@ -60,12 +67,13 @@ public class HandleMessage {
 			
 			responseToUserA.put("tag", TagName.getGameData());		
 			responseToUserA.put("beginTime", Cryptor.getAESEncrypt(time));
-			responseToUserA.put("idCompetior", Cryptor.getAESEncrypt(Integer.toString(userB.getId())));
+			responseToUserA.put("idCompetitor", Cryptor.getAESEncrypt(Integer.toString(userB.getId())));
+			responseToUserA.put("idHistory", idHis);
 			
 			responseToUserB.put("tag", TagName.getGameData());
 			responseToUserB.put("beginTime", Cryptor.getAESEncrypt(time));
-			responseToUserB.put("idCompetior", Cryptor.getAESEncrypt(Integer.toString(userA.getId())));
-			
+			responseToUserB.put("idCompetitor", Cryptor.getAESEncrypt(Integer.toString(userA.getId())));
+			responseToUserB.put("idHistory", idHis);
 			
 			//add data game
 			responseToUserA.put("data game to A", "test");	
@@ -79,6 +87,7 @@ public class HandleMessage {
 		}
 	}
 	
+	//handle user B refuse invite
 	public static void handleRefuseInvite(Session userASession){
 		try {		
 			JSONObject response = new JSONObject();
@@ -89,12 +98,104 @@ public class HandleMessage {
 		}
 	}
 	
-	public static void handleCompleteGame(){
-			
-		}
-	
-	public static void handleDefeatGame(){
+	//if userA complete game
+	public static boolean handleCompleteGame(Session userSession, Session competitorSession, String beginTimeEncrypted, int id){
+		String beginTime = Cryptor.getAESDecrypt(beginTimeEncrypted);
+		User competitorUser = (User) competitorSession.getUserProperties().get("user");
+		User user = (User) userSession.getUserProperties().get("user");
 		
+		//if begin time is same
+		if(competitorUser.getStatus().equals(beginTime)){
+			//notice to competitor
+			JSONObject response = new JSONObject();
+			response.put("tag", TagName.getYouLose());
+			try {
+				competitorSession.getBasicRemote().sendText(response.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			//update point
+			user.setPoint(user.getPoint()+1);
+			if(competitorUser.getPoint() != 0){
+				competitorUser.setPoint(competitorUser.getPoint()-1);	
+			}
+			
+			//update status 2 users
+			user.setStatus("online");
+			competitorUser.setStatus("online");
+			
+			//save point and history to database
+			HistoryDAO history = new HistoryDAO();
+			history.updateHistory(id, Integer.toString(user.getId()));
+			UserDAO userDAO = new UserDAO();
+			userDAO.updatePoint(user.getId(), competitorUser.getId(), user.getPoint(), competitorUser.getPoint());
+			
+			return true;
+		}
+		
+		//else
+		else{
+			JSONObject response = new JSONObject();
+			response.put("tag", TagName.getFalseComplete());
+			try {
+				userSession.getBasicRemote().sendText(response.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return false;
+		}
+	}
+	
+	//if userA defeat game
+	public static boolean handleDefeatGame(Session userSession, Session competitorSession, String beginTimeEncrypted, int id){
+		String beginTime = Cryptor.getAESDecrypt(beginTimeEncrypted);
+		User competitorUser = (User) competitorSession.getUserProperties().get("user");
+		User user = (User) userSession.getUserProperties().get("user");
+		
+		//if begin time is same
+		if(competitorUser.getStatus().equals(beginTime)){
+			//notice to competitor
+			JSONObject response = new JSONObject();
+			response.put("tag", TagName.getYouWin());
+			try {
+				competitorSession.getBasicRemote().sendText(response.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			//update point
+			competitorUser.setPoint(competitorUser.getPoint()+1);
+			if(user.getPoint() != 0){
+				user.setPoint(user.getPoint()-1);	
+			}
+			
+			//update status 2 users
+			user.setStatus("online");
+			competitorUser.setStatus("online");
+			
+			//save point and history to database
+			HistoryDAO history = new HistoryDAO();
+			history.updateHistory(id, Integer.toString(competitorUser.getId()));
+			UserDAO userDAO = new UserDAO();
+			userDAO.updatePoint(user.getId(), competitorUser.getId(), user.getPoint(), competitorUser.getPoint());
+			
+			return true;
+		}
+		
+		//else
+		else{
+			JSONObject response = new JSONObject();
+			response.put("tag", TagName.getFalseComplete());
+			try {
+				userSession.getBasicRemote().sendText(response.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return false;
+		}
 	}
 	
 	public static void handlerRematchGame(){

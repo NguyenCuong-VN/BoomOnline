@@ -23,8 +23,19 @@ public class TagName {
 	private static String rematchAccept = "<Rematch accept>";
 	private static String refuseContinue = "<Refuse continue>";
 	private static String rematchRefuse = "<Rematch refuse>";
+	private static String falseComplete = "<False complete>";
 	
 	
+	
+	
+	public static String getFalseComplete() {
+		return falseComplete;
+	}
+
+	public static void setFalseComplete(String falseComplete) {
+		TagName.falseComplete = falseComplete;
+	}
+
 	public static String getLoginFalse() {
 		return loginFalse;
 	}

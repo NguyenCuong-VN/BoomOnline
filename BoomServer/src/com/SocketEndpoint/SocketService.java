@@ -23,6 +23,7 @@ import org.json.simple.parser.ParseException;
 
 import com.DAO.UserDAO;
 import com.Model.User;
+import com.Util.Cryptor;
 import com.Util.TagName;
 
 @ServerEndpoint(value = "/websocket/users/online/{username}/{password}")
@@ -70,49 +71,89 @@ public class SocketService {
 	@OnMessage
 	public void handleMessage(String message, Session userSession) throws IOException{
 		try {
-			JSONObject data = (JSONObject) new JSONParser().parse(message);
+			JSONObject data = null;
+			Object data_tmp =  new JSONParser().parse(message);
+			if(data_tmp instanceof JSONObject){
+				data = (JSONObject) data_tmp;
+			}
 			
 			//if userA invite userB
 			if(data.get("tag").equals(TagName.getRequestCompare())){
 				int idUserB = Integer.parseInt((data.get("idUserB").toString()));
 				Session userBSession = getUserByID(idUserB);
-				HandleMessage.handleRequestCompare(userSession, userBSession);
-				
+				User tmp = (User) userBSession.getUserProperties().get("user");
+				if(!tmp.getStatus().equals("online")){
+					userBSession = null;
+				}
+				HandleMessage.handleRequestCompare(userSession, userBSession);			
 			}
+			
 			//if userB accept invite from userA
 			else if(data.get("tag").equals(TagName.getAcceptInvite())){
-				int idUserA = (Integer) Integer.parseInt((data.get("idUserA").toString()));
+				int idUserA = Integer.parseInt((data.get("idUserA").toString()));
 				Session userASession = getUserByID(idUserA);
+				User tmp = (User) userASession.getUserProperties().get("user");
+				if(!tmp.getStatus().equals("online")){
+					userASession = null;
+				}
 				HandleMessage.handleAcceptInvite(userASession, userSession);
 			}
+			
 			//if userB refuse invite from userA
 			else if(data.get("tag").equals(TagName.getRefuseInvite())){
-				int idUserA = (Integer) Integer.parseInt((data.get("idUserA").toString()));
+				int idUserA = Integer.parseInt((data.get("idUserA").toString()));
 				Session userASession = getUserByID(idUserA);
+				User tmp = (User) userASession.getUserProperties().get("user");
+				if(!tmp.getStatus().equals("online")){
+					userASession = null;
+				}
 				HandleMessage.handleRefuseInvite(userASession);
-			}
-			else if(data.get("tag") == "<>"){
-				
-			}
-			else if(data.get("tag") == "<>"){
-				
-			}
-			else if(data.get("tag") == "<>"){
-				
-			}
+			}	
 			
 			//if userA complete game
 			else if(data.get("tag").equals(TagName.getCompleteGame())){
+				String idCompetitorEncrypted = data.get("idCompetitor").toString();
+				String idCompetitor = Cryptor.getAESDecrypt(idCompetitorEncrypted);
+				int id = Integer.parseInt(idCompetitor);
+				Session competitorSession = getUserByID(id);	
 				
+				String beginTime = data.get("beginTime").toString();
+				int idHistory = Integer.parseInt((data.get("idHistory").toString()));
+				boolean check = HandleMessage.handleCompleteGame(userSession, competitorSession, beginTime, idHistory);	
+				if(check){
+					updateUsers();
+				}
 			}
 			
 			//if userA defeat game
 			else if(data.get("tag").equals(TagName.getDefeatGame())){
+				String idCompetitorEncrypted = data.get("idCompetitor").toString();
+				String idCompetitor = Cryptor.getAESDecrypt(idCompetitorEncrypted);
+				int id = Integer.parseInt(idCompetitor);
+				Session competitorSession = getUserByID(id);
 				
+				if(competitorSession != null){
+					String beginTime = data.get("beginTime").toString();
+					int idHistory = Integer.parseInt((data.get("idHistory").toString()));
+					boolean check = HandleMessage.handleDefeatGame(userSession, competitorSession, beginTime, idHistory);	
+					if(check){
+						updateUsers();
+					}
+				}	
 			}
 			
 			//if userA want rematch game
 			else if(data.get("tag").equals(TagName.getRematchGame())){
+				
+			}
+			
+			else if(data.get("tag") == "<>"){
+				
+			}
+			else if(data.get("tag") == "<>"){
+				
+			}
+			else if(data.get("tag") == "<>"){
 				
 			}
 		} catch (ParseException e) {
@@ -143,14 +184,17 @@ public class SocketService {
 			if(users_online.contains(userSession)) users_online.remove(userSession);
 		}
 		
-		//send update users list to users
+		updateUsers();
+	}
+	
+	//send update users list to users
+	private void updateUsers(){
 		JSONObject usersList = userListToJSON();
 		usersList.put("tag", TagName.getUpdateUsers());
 		for(Session session : users_online){
 			try {
 				session.getBasicRemote().sendText(usersList.toString());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -174,7 +218,7 @@ public class SocketService {
 		Session userB = null;
 		for(Session session: users_online){
 			User usr = (User) session.getUserProperties().get("user");
-			if(usr.getId() == id && usr.getStatus() == "online"){
+			if(usr.getId() == id){
 				userB = session;
 				break;	
 			}

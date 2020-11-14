@@ -18,8 +18,8 @@ public class UserDAO {
 		//if username and passwd is validated
 		if(Validate.checkUsernameAndPasswd(username) && Validate.checkUsernameAndPasswd(password)){
 			//hash passwd
-			//password = SHA1.getSHA1Hash(password);
-			
+			password = Cryptor.getSHA1Hash(password);
+
 			//connect db
 			try {
 				PreparedStatement pre = conn.prepareStatement("SELECT * FROM user WHERE username=? and password=?;");
@@ -35,6 +35,21 @@ public class UserDAO {
 		}
 
 		return user;
+	}
+	
+	public void updatePoint(int idUserA, int idUserB, int pointA, int pointB){
+		try {
+			PreparedStatement pre = conn.prepareStatement("UPDATE user SET point = ? WHERE id = ?;");
+			pre.setInt(1, pointA);
+			pre.setInt(2, idUserA);
+			int rs = pre.executeUpdate();	
+			
+			pre.setInt(1, pointB);
+			pre.setInt(2, idUserB);
+			rs = pre.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

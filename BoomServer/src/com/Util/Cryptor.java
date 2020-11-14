@@ -1,5 +1,6 @@
 package com.Util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,10 +16,11 @@ public class Cryptor {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-1");
 			byte[] messageDigest = md.digest(plaintext.getBytes());
-			hashText = messageDigest.toString();
+//			hashText = messageDigest.toString();
+			hashText = Base64.getEncoder().encodeToString(messageDigest);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
-		}
+		} 
 		
 		return hashText;
 	}
