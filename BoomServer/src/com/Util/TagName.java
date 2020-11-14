@@ -19,9 +19,7 @@ public class TagName {
 	private static String youWin = "<You win>";
 	private static String rematchGame = "<Rematch game>";
 	private static String requestContinue = "<Request continue>";
-	private static String acceptContinue = "<Accept continue>";
 	private static String rematchAccept = "<Rematch accept>";
-	private static String refuseContinue = "<Refuse continue>";
 	private static String rematchRefuse = "<Rematch refuse>";
 	private static String falseComplete = "<False complete>";
 	
@@ -108,16 +106,8 @@ public class TagName {
 		return requestContinue;
 	}
 
-	public static String getAcceptContinue() {
-		return acceptContinue;
-	}
-
 	public static String getRematchAccept() {
 		return rematchAccept;
-	}
-
-	public static String getRefuseContinue() {
-		return refuseContinue;
 	}
 
 	public static String getRematchRefuse() {

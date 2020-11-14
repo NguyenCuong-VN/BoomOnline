@@ -144,12 +144,18 @@ public class SocketService {
 			
 			//if userA want rematch game
 			else if(data.get("tag").equals(TagName.getRematchGame())){
+				String idCompetitorEncrypted = data.get("idCompetitor").toString();
+				String idCompetitor = Cryptor.getAESDecrypt(idCompetitorEncrypted);
+				int id = Integer.parseInt(idCompetitor);
+				Session competitorSession = getUserByID(id);
+				User tmp = (User) competitorSession.getUserProperties().get("user");
+				if(!tmp.getStatus().equals("online")){
+					competitorSession = null;
+				}
+				HandleMessage.handlerRematchGame(userSession, competitorSession);
 				
 			}
 			
-			else if(data.get("tag") == "<>"){
-				
-			}
 			else if(data.get("tag") == "<>"){
 				
 			}

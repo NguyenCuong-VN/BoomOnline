@@ -198,8 +198,31 @@ public class HandleMessage {
 		}
 	}
 	
-	public static void handlerRematchGame(){
-		
+	public static void handlerRematchGame(Session inviterSession, Session competitorSession){
+		//if competitor offline or ingame
+		if(competitorSession == null){
+			JSONObject response = new JSONObject();
+			response.put("tag", TagName.getRematchRefuse());
+			try {
+				inviterSession.getBasicRemote().sendText(response.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		//else
+		else{
+			User inviter = (User) inviterSession.getUserProperties().get("user");
+			
+			JSONObject response = new JSONObject();
+			response.put("tag", TagName.getRequestContinue());
+			response.put("idInviter", inviter.getId());
+			response.put("nameInviter", inviter.getName());
+			try {
+				competitorSession.getBasicRemote().sendText(response.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 }
