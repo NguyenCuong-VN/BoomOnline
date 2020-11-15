@@ -11,6 +11,7 @@ import com.DAO.HistoryDAO;
 import com.DAO.UserDAO;
 import com.Model.User;
 import com.Util.Cryptor;
+import com.Util.DataGame;
 import com.Util.TagName;
 
 public class HandleMessage {
@@ -56,9 +57,9 @@ public class HandleMessage {
 		HistoryDAO history = new HistoryDAO();
 		int idHis = history.createHistory(userA.getId(), userB.getId(), userA.getName(), userB.getName(), time);
 		
-		//create data game
-
-		
+		//create data game  [8x10, 10 booms]
+		DataGame dataGame = new DataGame();
+		String data = dataGame.getDataGame();
 		//send
 		try {		
 			JSONObject responseToUserA = new JSONObject();
@@ -76,8 +77,8 @@ public class HandleMessage {
 			responseToUserB.put("idHistory", idHis);
 			
 			//add data game
-			responseToUserA.put("data game to A", "test");	
-			responseToUserB.put("data game to B", "test");	
+			responseToUserA.put("datagame", data);	
+			responseToUserB.put("datagame", data);	
 			
 			//send to 2 users
 			userASession.getBasicRemote().sendText(responseToUserA.toString());
