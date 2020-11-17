@@ -1,0 +1,119 @@
+﻿
+data giữa client và server đều là JSONObject
+VD: {tag:string, id:int}  ->  tag là key, string là kiểu dữ liệu của value  // id là key, int là kiểu dữ liệu của value   (like:  {"tag":"<refuse>", "id":1}  )
+
+------------------------------------------------------ SERVER SIDE --------------------------------------------------
+
+ 
+1. [api/users/rank/{loai_rank}]:                          ///////////////// lấy bảng xêp hạng    /// 3 loai rank: totalpoint, averagepoint, averagetime
+    - khi client gửi yêu cầu lấy danh sách lên: 
+        - hợp lệ:               response      <rank success> {tag:string, data:string}
+            + thực hiện lấy data từ database -> chuyển thành json -> chuyển thành json_string -> response
+        - không hợp lệ:         response      <rank error> {tag:string}
+
+
+2. Websocket [websocket/users/online/{username}/{password}]:       ////////////////// kết nối server (online)     [done]
+    - khởi tạo 1 mảng users_online synchronyzed lưu data các user (session_client) đang online và trạng thái user 
+    
+    - onOpen: lấy username và password user gửi lên
+        + data hợp lệ -> users_online.add(session_client) -> response  <login success> {tag:string} -> gửi danh sách users_online cho tất cả client ->  <update users>  {tag:string, users:List/JSONMap}
+        + data không hợp lệ:   <login false>  {tag:string}
+
+    - onClose:   users_online.remove(session_client) -> gửi danh sách users_online cho tất cả client ->  <update users>  {tag:string, users:List/JSONMap}
+
+    - onMessage:
+	 + <request compare>: user A invite user B:     {tag:string, idUserB:int}
+             	    + kiểm tra user B có đang bận hoặc offline không (kiểm tra trong mảng users_online với id user B được user A gửi lên):
+                       + hợp lệ:             
+                    	+ Lấy socket_userB của user B trong mảng users_online -> gửi lời mời ->  <request invite> {tag:string, inviter_name:string, inviter_id:int}   (có thông tin user A để khi response biết cặp user nào)
+                        		+ response <accept invite> {tag:string, idUserA:int} :  cập nhật trạng thái 2 user trên mảng users_online là trong trận -> lưu history vào database -> tạo <game data>   {tag:string, datagame:..., beginTime:string, idCompetitor:string, idHistory:int}-> gửi cho cả 2 user
+                        		+ response <refuse invite> {tag:string, idUserA:int}: -> response cho user A -> <refuse compare>  {tag:string}
+                       + không hợp lệ:         response cho user A -> <denied compare>   {tag:string}
+     
+ 	 + <complete game>  {tag:string, beginTime:string, idCompetitor:string, idHistory:int} : check begin time 
+		+ đúng: -> thực hiện thông báo cho user còn lại ->   <you lose> {tag:string}  -> cập nhật điểm  (thang +1, thua -1), cap nhat database -> sửa trạng thái 2 user
+        		+sai: thông báo ->  <false complete>  {tag:string}
+     
+ 	 + <defeat game>  {tag:string, beginTime:string, idCompetitor:string, idHistory:int}: check begin time 
+		+ đúng: -> thực hiện thông báo cho user còn lại ->   <you win>   {tag:string}  -> cộng điểm cho userB (nếu userB vẫn trong trận), tru diem userA , cap nhat database -> sửa trạng thái 2 user
+        		+sai: thông báo ->  <false complete>  {tag:string}
+    
+	+ <rematch game>  {tag:string, idCompetitor:string}: thực hiện thông báo cho user còn lại -> <request continue> {tag:string, idInviter:int, nameInviter:string }
+            	 	+ response <accept invite> {tag:string, idUserA:int} :  cập nhật trạng thái 2 user trên mảng users_online là trong trận -> lưu history vào database -> tạo <game data>   {tag:string, datagame:..., beginTime:string, idCompetitor:string, idHistory:int}-> gửi cho cả 2 user
+           	 	+ response <refuse invite> {tag:string, idUserA:int}: -> response cho user A -> <refuse compare>
+           	 	+userB offline:       gửi thông báo cho userA  -> <rematch refuse> {tag:string}
+
+
+        
+    
+
+
+
+
+
+
+
+
+
+------------------------------------------------------ CLIENT SIDE --------------------------------------------------
+
+
+1. User A đăng nhập
+    - đăng nhập: tạo socket_online kết nối đến endpoint [websocket/users/online/{username}/{password}] 
+        + <login success>: -> tạo thread riêng chạy socket_online này (nếu socket_online bị ngắt đồng nghĩa với offline) -> điều hướng đến mục 2
+        + <login false>: -> thông báo -> thực hiện lại mục 1
+
+2. Danh sách người chơi online
+    - render data từ socket_online <update users>
+
+3. Thách đấu
+    - user A nhấn vào tên user B -> gửi request ( <request compare> ) lên websocket qua socket_online tạo tại mục 1 với user_id của user B (người được thách đấu): 
+        - response <denied compare>: thực hiện thông báo user B đang bận / offline
+        - response <refuse compare>: thực hiện thông báo user B không đồng ý
+        - response <game data>:  mục 7
+
+4. Được thách đấu:
+    - nếu:
+        - đồng ý: thông báo <accept invite> đến server 
+        - từ chối: thông báo <refuse invite> đến server
+
+
+5. Game đấu
+    - Khi bắt đầu game: client tiến hành tạo game đấu theo data đã nhận được và chơi game:  (kiểm tra xem còn frame game không, nếu chưa thì tạo)
+        - hết thời gian: tiến hành thông báo hết thời gian -> kết thúc game
+        - hoàn thành: gửi   <complete game>     lên [server_socket] qua socket_online và kết thúc game
+        - thất bại: gửi    <defeat game>     lên [server_socket] qua socket_online và kết thúc game
+
+    - Khi kết thúc game đấu:
+        - Hiển thị 2 nút chơi lại / kết thúc:
+            - nếu có -> gửi      <rematch game>      lên [server_socket] qua socket_online
+	-đồng ý: server gửi về data game, tạo game lại 
+                - <rematch refuse>: -> điều hướng đến mục 2
+            - nếu không -> điều hướng đến mục 2
+
+    -socket_online:
+        -onMessage:
+            + <you lose>: tiến hành thông báo và kết thúc      // đối thủ đã thắng
+            + <you win>: tiến hành thông báo và kết thúc      // đối thủ đã thua
+
+6. Bảng xếp hạng
+    - gửi request lên [api/users/rank/{loai_rank}] lấy data:
+        - response <rank success>: nhận data và render
+        - response <rank error>: thông báo 
+    - nút refrest khi nhấn -> lặp lại mục 6
+
+ 
+ 
+7. socket_online: 
+        - onMessage:
+            + <false complete>: có lỗi khi complete game -> thông báo
+            + <request invite>: có người invite -> chuyển đến mục 4
+            + <update users>: cập nhật danh sách user online 
+            + <game data>: nhận data game   /// {data game, encrypt(begin time, id user còn lại)}  ///  -> mục 5
+            + <request continue>: được mời chơi lại -> thông báo:
+                + user đồng ý: gửi <accept continue> lên server
+                + user không đồng ý: gửi <refuse continue> lên server
+
+
+
+
