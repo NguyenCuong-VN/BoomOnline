@@ -2,6 +2,8 @@ package com.SocketEndpoint;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.concurrent.TimeUnit;
 
 import javax.websocket.Session;
 
@@ -127,8 +129,14 @@ public class HandleMessage {
 			competitorUser.setStatus("online");
 			
 			//save point and history to database
+			LocalDateTime begin = LocalDateTime.parse(beginTime);
+			long longBegin = begin.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+			long longEnd = System.currentTimeMillis();
+			long end_time = longEnd - longBegin;
+			int endTime = (int) end_time;
+			
 			HistoryDAO history = new HistoryDAO();
-			history.updateHistory(id, Integer.toString(user.getId()));
+			history.updateHistory(id, Integer.toString(user.getId()), endTime);
 			UserDAO userDAO = new UserDAO();
 			userDAO.updatePoint(user.getId(), competitorUser.getId(), user.getPoint(), competitorUser.getPoint());
 			
@@ -177,8 +185,14 @@ public class HandleMessage {
 			competitorUser.setStatus("online");
 			
 			//save point and history to database
+			LocalDateTime begin = LocalDateTime.parse(beginTime);
+			long longBegin = begin.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+			long longEnd = System.currentTimeMillis();
+			long end_time = longEnd - longBegin;
+			int endTime = (int) end_time;
+			
 			HistoryDAO history = new HistoryDAO();
-			history.updateHistory(id, Integer.toString(competitorUser.getId()));
+			history.updateHistory(id, Integer.toString(competitorUser.getId()), endTime);
 			UserDAO userDAO = new UserDAO();
 			userDAO.updatePoint(user.getId(), competitorUser.getId(), user.getPoint(), competitorUser.getPoint());
 			

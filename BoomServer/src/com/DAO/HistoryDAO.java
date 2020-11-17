@@ -33,18 +33,18 @@ public class HistoryDAO {
 			e.printStackTrace();
 		}	
 		return result;
-	}
+	}	
 	
-	public void updateHistory(int id, String result){
+	public void updateHistory(int id, String result, int end_time){
 		try {
-			PreparedStatement pre = conn.prepareStatement("UPDATE history SET result = ? WHERE id = ?;");
+			PreparedStatement pre = conn.prepareStatement("UPDATE history SET result = ? , end_time = ? WHERE id = ?;");
 			pre.setString(1, result);
-			pre.setInt(2, id);
+			pre.setInt(2, end_time);
+			pre.setInt(3, id);
 			int rs = pre.executeUpdate();	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
 	}
-	
 	
 }
