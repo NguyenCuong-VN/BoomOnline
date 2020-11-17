@@ -30,9 +30,10 @@ CREATE TABLE `history` (
   `name_userB` varchar(45) NOT NULL,
   `time` varchar(45) NOT NULL,
   `result` varchar(45) NOT NULL DEFAULT 'draw',
+  `end_time` int NOT NULL DEFAULT '600000',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +42,7 @@ CREATE TABLE `history` (
 
 LOCK TABLES `history` WRITE;
 /*!40000 ALTER TABLE `history` DISABLE KEYS */;
-INSERT INTO `history` VALUES (18,'1','2','cuong','cuong2','2020-11-14T16:10:04.053','draw'),(19,'1','2','cuong','cuong2','2020-11-14T16:34:02.792','2');
+INSERT INTO `history` VALUES (18,'1','2','cuong','cuong2','2020-11-14T16:10:04.053','1',1000),(19,'1','2','cuong','cuong2','2020-11-14T16:34:02.792','2',600000),(20,'1','2','cuong','cuong2','2020-11-14T21:02:30.259','draw',600000),(21,'1','2','cuong','cuong2','2020-11-14T21:27:45.621','draw',600000),(22,'1','2','cuong','cuong2','2020-11-15T16:19:26.394','draw',600000),(23,'1','2','cuong','cuong2','2020-11-17T15:50:01.781','1',71150);
 /*!40000 ALTER TABLE `history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -70,7 +71,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'cuong','cuongnguyen','AlWh14Kv3aaHHDL58YbBd7/7fuY=',0),(2,'cuong2','cuon2','txhbtfvssjIH9T7E6bMpMqVO3E8=',1),(3,'cuong3','cuong3','rBYuvGB/EOc6Mg6AqxaTrCeJQUU=',0);
+INSERT INTO `user` VALUES (1,'cuong','cuongnguyen','AlWh14Kv3aaHHDL58YbBd7/7fuY=',1),(2,'cuong2','cuon2','txhbtfvssjIH9T7E6bMpMqVO3E8=',0),(3,'cuong3','cuong3','rBYuvGB/EOc6Mg6AqxaTrCeJQUU=',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -83,4 +84,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-11-14 16:41:32
+-- Dump completed on 2020-11-17 16:07:34
