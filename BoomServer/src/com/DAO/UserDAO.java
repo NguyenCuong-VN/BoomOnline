@@ -1,12 +1,24 @@
 package com.DAO;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.Model.User;
 import com.Util.Cryptor;
+import com.Util.TagName;
 import com.Util.Validate;
 
 public class UserDAO {
@@ -52,4 +64,68 @@ public class UserDAO {
 		}
 	}
 	
+	public Map getRankPoint(){
+		Map<Integer, String> data = new HashMap<Integer, String>();
+		int rank=1;
+		
+		//connect db
+		try {
+			PreparedStatement pre = conn.prepareStatement("SELECT * FROM user ORDER BY user.point DESC;");
+			ResultSet rs = pre.executeQuery();	
+			while(rs.next()){
+				User user = new User(rs.getInt("id"), rs.getString("name"), rs.getString("username"), rs.getString("password"), rs.getInt("point"));
+				data.put(rank, user.getRankView().toString());
+				rank++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return data;
+	}	
+	
+	public Map getAverageRank(){
+		Map<Integer, String> data = new HashMap<Integer, String>();
+		int rank=1;
+		
+		//connect db
+		try {
+			CallableStatement stmt = conn.prepareCall("{CALL average_rank()}");
+			ResultSet rs = stmt.executeQuery();	
+			while(rs.next()){
+				User user = new User(rs.getInt("id_user"), rs.getString("name"), rs.getString("username"), rs.getString("password"), rs.getInt("point"));
+				JSONObject json = user.getRankView();
+				json.put("average", rs.getFloat("trung binh"));
+				data.put(rank, json.toString());
+				rank++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return data;
+	}
+	
+	public Map getAverageTime(){
+		Map<Integer, String> data = new HashMap<Integer, String>();
+		int rank=1;
+		
+		//connect db
+		try {
+			CallableStatement stmt = conn.prepareCall("{CALL average_time()}");
+			ResultSet rs = stmt.executeQuery();	
+			while(rs.next()){
+				User user = new User(rs.getInt("id"), rs.getString("name"), rs.getString("username"), rs.getString("password"), rs.getInt("point"));
+				JSONObject json = user.getRankView();
+				json.put("average", rs.getFloat("trung binh"));
+				data.put(rank, json.toString());
+				rank++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return data;
+	}
+		
 }

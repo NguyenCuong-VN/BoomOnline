@@ -1,5 +1,7 @@
 package com.Model;
 
+import org.json.simple.JSONObject;
+
 public class User {
 	private int id;
 	private String name;
@@ -7,7 +9,6 @@ public class User {
 	private String password;
 	private int point;
 	private String status = "offline";   //false: offline,  online: online,  [time]: ingame
-	
 
 	public User() {
 		super();
@@ -32,6 +33,14 @@ public class User {
 		return "{\"id\":" + this.id + ", \"name\":\"" + this.name + "\", \"point\":" + this.point + ", \"status\":\"" + stt + "\"}";
 	}
 	
+	public JSONObject getRankView() {
+		
+		JSONObject json = new JSONObject();
+		json.put("id", this.id);
+		json.put("name", this.name);
+		json.put("point", this.point);
+		return json;
+	}
 	
 	public String getStatus() {
 		return status;
@@ -69,6 +78,5 @@ public class User {
 	public void setPoint(int point) {
 		this.point = point;
 	}
-	
 	
 }
