@@ -127,5 +127,46 @@ public class UserDAO {
 		
 		return data;
 	}
+	
+	private boolean checkUsername(String username){
+		if(Validate.checkUsernameAndPasswd(username)){
+			try {
+				PreparedStatement pre = conn.prepareStatement("SELECT * FROM boomonline.user WHERE user.username = ?;");
+				pre.setString(1, username);
+				ResultSet rs = pre.executeQuery();	
+				if(rs.next()){
+					return false;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return true;
+		}
+		else return false;
+	}
+	
+	public boolean createUser(String name, String username, String password){
+		boolean user = this.checkUsername(username);
+		if(user){
+			//hash passwd
+			password = Cryptor.getSHA1Hash(password);
+		
+			//connect db
+			try {
+				PreparedStatement pre = conn.prepareStatement("INSERT INTO boomonline.user (name, username, password) VALUES (?,?,?);");
+				pre.setString(1, name);
+				pre.setString(2, username);
+				pre.setString(3, password);
+				int rs = pre.executeUpdate();	
+				if(rs != 0){
+					return true;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return false;
+	}
 		
 }

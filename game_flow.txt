@@ -11,6 +11,12 @@ VD: {tag:string, id:int}  ->  tag là key, string là kiểu dữ liệu của v
             + thực hiện lấy data từ database -> chuyển thành json -> chuyển thành json_string -> response
         - không hợp lệ:         response      <rank error> {tag:string}
 
+3. [api/users/register]:            //đăng ký user mới     
+        - khi client gửi yêu cầu đăng ký lên:    POST {username:string, password:string, name:string} 
+        - hợp lệ:               response      <register success> {tag:string}
+            + thực hiện kiểm tra data (lọc định dạng, check xem có trùng username không) -> tạo data vào database -> response
+            + nếu trùng username: response     <coincide username>  {tag: string}
+        - không hợp lệ:         response      <register error> {tag:string}
 
 2. Websocket [websocket/users/online/{username}/{password}]:       ////////////////// kết nối server (online)     [done]
     - khởi tạo 1 mảng users_online synchronyzed lưu data các user (session_client) đang online và trạng thái user 

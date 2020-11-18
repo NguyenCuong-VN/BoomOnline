@@ -22,10 +22,36 @@ public class TagName {
 	private static String rematchAccept = "<Rematch accept>";
 	private static String rematchRefuse = "<Rematch refuse>";
 	private static String falseComplete = "<False complete>";
+	private static String errorRegister = "<Register error>";
+	private static String successRegister = "<Register success>";
+	private static String coincideUsername = "<Coincide username>";
 	
 	
 	
-	
+	public static String getErrorRegister() {
+		return errorRegister;
+	}
+
+	public static void setErrorRegister(String errorRegister) {
+		TagName.errorRegister = errorRegister;
+	}
+
+	public static String getSuccessRegister() {
+		return successRegister;
+	}
+
+	public static void setSuccessRegister(String successRegister) {
+		TagName.successRegister = successRegister;
+	}
+
+	public static String getCoincideUsername() {
+		return coincideUsername;
+	}
+
+	public static void setCoincideUsername(String coincideUsername) {
+		TagName.coincideUsername = coincideUsername;
+	}
+
 	public static String getFalseComplete() {
 		return falseComplete;
 	}
