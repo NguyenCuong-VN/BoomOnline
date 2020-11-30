@@ -25,9 +25,19 @@ public class TagName {
 	private static String errorRegister = "<Register error>";
 	private static String successRegister = "<Register success>";
 	private static String coincideUsername = "<Coincide username>";
+	private static String login = "<Login>";
 	
 	
 	
+	
+	public static String getLogin() {
+		return login;
+	}
+
+	public static void setLogin(String login) {
+		TagName.login = login;
+	}
+
 	public static String getErrorRegister() {
 		return errorRegister;
 	}
