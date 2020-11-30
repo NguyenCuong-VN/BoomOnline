@@ -114,6 +114,7 @@ public class HandleClient extends Thread{
 									userAPair = null;
 								}
 								HandleMessageSocket.handleAcceptInvite(userAPair, this.pair);
+								updateUsers();
 							}
 							
 						}

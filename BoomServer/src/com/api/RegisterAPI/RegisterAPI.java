@@ -3,6 +3,7 @@ package com.api.RegisterAPI;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONObject;
@@ -21,7 +22,7 @@ public class RegisterAPI {
 	public Response register(String sReq){
 		JSONObject json = new JSONObject();
 		json.put("tag", TagName.getErrorRegister());
-		
+
 		try {
 			JSONObject data = (JSONObject) new JSONParser().parse(sReq);
 			String username = (String) data.get("username");
@@ -43,6 +44,6 @@ public class RegisterAPI {
 		}
 		
 		
-		return Response.ok(json.toString()).build();
+		return Response.ok(json.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 	}
 }

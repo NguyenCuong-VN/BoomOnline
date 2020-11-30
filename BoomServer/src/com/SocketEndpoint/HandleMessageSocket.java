@@ -104,11 +104,13 @@ public class HandleMessageSocket {
 			responseToUserA.put("beginTime", Cryptor.getAESEncrypt(time));
 			responseToUserA.put("idCompetitor", Cryptor.getAESEncrypt(Integer.toString(userB.getId())));
 			responseToUserA.put("idHistory", idHis);
+			responseToUserA.put("nameCompetitor", userB.getName());
 			
 			responseToUserB.put("tag", TagName.getGameData());
 			responseToUserB.put("beginTime", Cryptor.getAESEncrypt(time));
 			responseToUserB.put("idCompetitor", Cryptor.getAESEncrypt(Integer.toString(userA.getId())));
 			responseToUserB.put("idHistory", idHis);
+			responseToUserB.put("nameCompetitor", userA.getName());
 			
 			//add data game
 			responseToUserA.put("datagame", data);	

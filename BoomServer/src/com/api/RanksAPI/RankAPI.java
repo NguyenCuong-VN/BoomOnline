@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONObject;
@@ -25,7 +26,7 @@ public class RankAPI {
 		Map<Integer, String> dataRank = userDAO.getRankPoint();
 		data.put("data", dataRank);
 		
-		return Response.ok(data.toString()).build();
+		return Response.ok(data.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 	}
 	
 	
@@ -40,7 +41,7 @@ public class RankAPI {
 		Map<Integer, String> dataRank = userDAO.getAverageRank();
 		data.put("data", dataRank);
 		
-		return Response.ok(data.toString()).build();
+		return Response.ok(data.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 	}
 	
 	
@@ -55,6 +56,6 @@ public class RankAPI {
 		Map<Integer, String> dataRank = userDAO.getAverageTime();
 		data.put("data", dataRank);
 		
-		return Response.ok(data.toString()).build();
+		return Response.ok(data.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 	}
 }
