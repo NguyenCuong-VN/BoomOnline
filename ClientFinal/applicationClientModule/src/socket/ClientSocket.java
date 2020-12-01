@@ -12,11 +12,18 @@ import javax.websocket.DeploymentException;
 import javax.websocket.Session;
 
 import src.util.TagName;
+import src.view.HomePage;
+import src.view.LoginForm;
+import src.view.RankPage;
+import src.view.RegisterForm;
 import src.view.gameDoMin;
 
 public class ClientSocket {
 	private gameDoMin gameFrame = null;
-	
+	private LoginForm loginFrame = null;
+	private RegisterForm registerFrame = null;
+	private HomePage homeFrame = null;
+	private RankPage rankFrame = null;
 	
 	private  BufferedWriter os = null;
     private  BufferedReader is = null;
@@ -52,33 +59,8 @@ public class ClientSocket {
         Thread res = new HandleServer(this);
 		res.start();	
 		
-		DangNhap("cuongnguyen", "cuong113");
-//		DangNhap("cuon2", "cuong34");
-		login();
     }  
     
-    //test
-    public void login(){	
-        
-
-        
-    		 		//test compare
-    		 		Scanner sc = new Scanner(System.in);
-    				String name = sc.next();
-    				System.out.println("input: " + name);
-    				if(name.equals("ok")){
-    					this.accept(1);
-    				}
-    				else if(name.equals("compare")){
-    					this.compare(2);
-    				}
-    				else if(name.equals("no")){
-    					this.refuse(1);
-    				}
-    				else if(name.equals("continue")){
-    					this.rematchGame("{\"tag\":\"<Rematch game>\", \"idCompetitor\":\"7LjGmRxIyFtDfuLqt0e32w==\"}");
-    				}
-    }
     
     public void DangNhap(String username,String pwd) throws IOException, DeploymentException{
     	try {
@@ -144,20 +126,12 @@ public class ClientSocket {
 			}
 	  }
 	  
-    public static void main(String[] args) {
-		try {
-			ClientSocket client = new ClientSocket();
-			client.client();
-			//test complete game
-			Scanner sc = new Scanner(System.in);
-			String input = sc.nextLine();
-			
-			client.accept(1);
-			while(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	  public void createLoginFrame(){
+		  this.loginFrame = new LoginForm(this);
+		  this.loginFrame.setVisible(true);
+	  }
+	  
+    
 
     
     
@@ -185,8 +159,41 @@ public class ClientSocket {
 
 	public void setIs(BufferedReader is) {
 		this.is = is;
+	}
+
+	public LoginForm getLoginFrame() {
+		return loginFrame;
+	}
+
+	public void setLoginFrame(LoginForm loginFrame) {
+		this.loginFrame = loginFrame;
+	}
+
+	public RegisterForm getRegisterForm() {
+		return registerFrame;
+	}
+
+	public void setRegisterForm(RegisterForm registerFrame) {
+		this.registerFrame = registerFrame;
+	}
+
+	public HomePage getHomeFrame() {
+		return homeFrame;
+	}
+
+	public void setHomeFrame(HomePage homeFrame) {
+		this.homeFrame = homeFrame;
+	}
+
+	public RankPage getRankFrame() {
+		return rankFrame;
+	}
+
+	public void setRankFrame(RankPage rankFrame) {
+		this.rankFrame = rankFrame;
 	}  
     
+	
    
     
     

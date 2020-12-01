@@ -1,16 +1,19 @@
 package src.socket;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 import javax.swing.JOptionPane;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import src.util.DataGame;
 import src.util.TagName;
+import src.view.HomePage;
 import src.view.gameDoMin;
 
 
@@ -32,21 +35,48 @@ public class HandleServer extends Thread{
 					JSONObject data = (JSONObject) new JSONParser().parse(message);
 					if(data.get("tag").equals(TagName.getUpdateUsers())){
 				    	//frame list user
-						System.out.println("A user want rematch with you: " + message);
 						
+						JSONArray js = (JSONArray) data.get("users");						
+						
+						if(this.clientSocket.getHomeFrame() != null){
+							//create object[][] data user online
+							Object[][] dataMo = new Object [js.size()][4];
+					    	
+					    	int index = 0;
+					    	for(Object jsb : js){
+								if(jsb instanceof JSONObject){
+									JSONObject a = (JSONObject) jsb;
+									Object[] tmp = new Object[4];
+									tmp[0] = a.get("id") ;
+									tmp[1] = a.get("name");
+									tmp[2] = a.get("point");
+									tmp[3] = a.get("status");
+									dataMo[index++] = tmp; 
+								}
+							}
+					    	
+							this.clientSocket.getHomeFrame().setTable(dataMo);
+						}				
 				    }
 					else if(data.get("tag").equals(TagName.getRequestInvite())){
-						//frame list user
-						System.out.println("A user want rematch with you: " + message);
+						
+						int result = JOptionPane.showConfirmDialog(this.clientSocket.getHomeFrame(), data.get("inviter_name") + " muốn thách đấu bạn");
+						if(result == JOptionPane.YES_OPTION){
+							int id = Math.toIntExact((Long) data.get("inviter_id"));
+							this.clientSocket.accept(id);
+						}
+						else{
+							int id = Math.toIntExact((Long) data.get("inviter_id"));
+							this.clientSocket.refuse(id);
+						}
 						
 					}
 					else if(data.get("tag").equals(TagName.getDeniedCompare())){
-						//frame list user
-						System.out.println("A user want rematch with you: " + message);
+						JOptionPane.showMessageDialog(this.clientSocket.getHomeFrame(), "Đối thủ của bạn không sẵn sàng");
 					}
 					else if(data.get("tag").equals(TagName.getRefuseCompare())){
-						//frame list user
-						System.out.println("A user want rematch with you: " + message);
+						
+						JOptionPane.showMessageDialog(this.clientSocket.getHomeFrame(), "Đối thủ không muốn solo với bạn");
 					}
 					else if(data.get("tag").equals(TagName.getYouLose())){
 						JOptionPane.showMessageDialog(this.clientSocket.getGameFrame(), "Chậm thế, người ta thắng rồi kìa !!");			
@@ -60,7 +90,7 @@ public class HandleServer extends Thread{
 						JOptionPane.showMessageDialog(this.clientSocket.getGameFrame(), "Lừa à, server bị gì ý !!");
 					}
 					else if(data.get("tag").equals(TagName.getRematchRefuse())){
-						//form  list user
+						JOptionPane.showMessageDialog(this.clientSocket.getHomeFrame(), "Đối thủ không muốn chơi lại với bạn");
 					}
 					else if(data.get("tag").equals(TagName.getGameData())){
 						System.out.println(data.get("idCompetitor"));
@@ -69,16 +99,28 @@ public class HandleServer extends Thread{
 						gameThread.start();
 					}
 					else if(data.get("tag").equals(TagName.getRequestContinue())){
-						//form list user
-						System.out.println("A user want rematch with you: " + message);
+						int result = JOptionPane.showConfirmDialog(this.clientSocket.getHomeFrame(), data.get("nameInviter") + " muốn chơi lại với bạn");
+						if(result == JOptionPane.YES_OPTION){
+							int id = Math.toIntExact((Long) data.get("idInviter"));
+							this.clientSocket.accept(id);
+						}
+						else{
+							int id = Math.toIntExact((Long) data.get("idInviter"));
+							this.clientSocket.refuse(id);
+						}
 					}
 					else if(data.get("tag").equals(TagName.getLoginSuccess())){
 						//form login, user list
-						System.out.println("A user want rematch with you: " + message);
+						String name = this.clientSocket.getLoginFrame().getUsername();
+						this.clientSocket.getLoginFrame().dispose();
+						this.clientSocket.setHomeFrame(new HomePage(this.clientSocket));
+						this.clientSocket.getHomeFrame().setVisible(true);
+						this.clientSocket.getHomeFrame().setLocationRelativeTo(null);
+						this.clientSocket.getHomeFrame().setTitle(name);
 					}
 					else if(data.get("tag").equals(TagName.getLoginFalse())){
-						//form login
-						System.out.println("A user want rematch with you: " + message);
+						
+						JOptionPane.showMessageDialog(this.clientSocket.getLoginFrame(), "Tài khoản hoặc mật khẩu không đúng");
 					}
 					else{
 						System.out.println("Response from Server: " + message);
@@ -93,3 +135,8 @@ public class HandleServer extends Thread{
     }
     
 }
+
+
+
+
+
