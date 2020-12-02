@@ -30,7 +30,7 @@ public class User {
 		else if(this.status == "online") stt = "online";
 		else stt = "ingame";
 		
-		return "{\"id\":" + this.id + ", \"name\":\"" + this.name + "\", \"point\":" + this.point + ", \"status\":\"" + stt + "\"}";
+		return "{\"id\":" + this.id + ", \"name\":\"" + this.name + "\", \"point\":" + this.point + ", \"status\":\"" + stt + "\", \"username\":\"" + this.username + "\"}";
 	}
 	
 	public JSONObject getRankView() {

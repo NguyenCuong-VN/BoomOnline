@@ -1,11 +1,17 @@
 package src.view;
 
+import java.util.Map;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import src.api.ClientAPI;
 import src.model.NguoiChoi;
 import src.socket.ClientSocket;
 
@@ -81,9 +87,15 @@ public class HomePage extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-
-
+        jButton3 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        
+        jButton1.enable(false);
+        jButton3.enable(false);
+        jButton5.enable(false);
+        
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,6 +130,27 @@ public class HomePage extends javax.swing.JFrame {
             }
         });
         
+        jButton3.setText("Tổng điểm");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        
+        jButton1.setText("Trung bình điểm");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        
+        jButton5.setText("Trung bình thời gian");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        
         
 
 
@@ -132,14 +165,15 @@ public class HomePage extends javax.swing.JFrame {
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(29, 29, 29)
-                        
+                        .addComponent(jButton2)
                         .addGap(41, 41, 41)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                
+                            	.addComponent(jButton5)
                                 .addGap(68, 68, 68)
-                                .addComponent(jButton2)
+                                .addComponent(jButton3)
                                 .addGap(98, 98, 98)
+                                .addComponent(jButton1)
                                )
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -179,9 +213,10 @@ public class HomePage extends javax.swing.JFrame {
                    )
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    
+                	.addComponent(jButton1)
+                    .addComponent(jButton5)
                     .addComponent(jButton2)
-                    
+                    .addComponent(jButton3)
                   )
                 .addGap(63, 63, 63))
         );
@@ -207,52 +242,181 @@ public class HomePage extends javax.swing.JFrame {
         
        
     }//GEN-LAST:event_jButton2ActionPerformed
+    
+    //tong diem
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        
+    	this.getRanks(ClientAPI.getRanks("totalpoint"), "totalpoint");
+    	
+        
+       
+    }//GEN-LAST:event_jButton2ActionPerformed
+    
+  //trung binh diem
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        
+    	this.getRanks(ClientAPI.getRanks("averagepoint"), "averagepoint");
+    	
+        
+       
+    }//GEN-LAST:event_jButton2ActionPerformed
+    
+  //trung binh thoi gian
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        
+    	this.getRanks(ClientAPI.getRanks("averagetime"), "averagetime");
+    	
+        
+       
+    }//GEN-LAST:event_jButton2ActionPerformed
 
-
-
-    /**
-     * @param args the command line arguments
-     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-        //</editor-fold>
-
-        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new HomePage().setVisible(true);
-//            }
-//        });
-    //}
+    private void getRanks(JSONObject data, String nameRank){					
+    	Map<String, String> datas = (Map<String, String>) data.get("data");
+		//create object[][] data user online
+		Object[][] dataMo = new Object [datas.size()+1][4];
+		
+    	if(nameRank.equals("averagepoint")){
+    		for (Map.Entry<String,String> entry : datas.entrySet()) {
+    			int index = Integer.parseInt(entry.getKey());
+    				JSONObject a;
+    				try {
+    					a = (JSONObject) new JSONParser().parse(entry.getValue());
+    					Object[] tmp = new Object[4];
+    					tmp[0] = index ;
+    					tmp[1] = a.get("id");
+    					tmp[2] = a.get("name");
+    					tmp[3] = a.get("average");
+    					dataMo[index] = tmp; 
+    				} catch (ParseException e) {
+    					e.printStackTrace();
+    				}				
+        	}
+    		try {
+	            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+	                if ("Nimbus".equals(info.getName())) {
+	                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+	                    break;
+	                }
+	            }
+	        } catch (ClassNotFoundException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (InstantiationException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (IllegalAccessException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        }
+    		 RankPage rank = new RankPage();
+ 		    rank.setVisible(true);
+ 		    rank.setLocationRelativeTo(null);
+ 		    rank.setTitle("rank");
+ 		    rank.setTable(dataMo, "Trung bình điểm");
+ 		   rank.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	}
+    	if(nameRank.equals("averagetime")){
+    		for (Map.Entry<String,String> entry : datas.entrySet()) {
+    			int index = Integer.parseInt(entry.getKey());
+    				JSONObject a;
+    				try {
+    					a = (JSONObject) new JSONParser().parse(entry.getValue());
+    					Object[] tmp = new Object[4];
+    					tmp[0] = index ;
+    					tmp[1] = a.get("id");
+    					tmp[2] = a.get("name");
+    					tmp[3] = a.get("average");
+    					dataMo[index] = tmp; 
+    				} catch (ParseException e) {
+    					e.printStackTrace();
+    				}				
+        	}
+    		try {
+	            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+	                if ("Nimbus".equals(info.getName())) {
+	                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+	                    break;
+	                }
+	            }
+	        } catch (ClassNotFoundException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (InstantiationException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (IllegalAccessException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        }
+    		 RankPage rank = new RankPage();
+ 		    rank.setVisible(true);
+ 		    rank.setLocationRelativeTo(null);
+ 		    rank.setTitle("rank");
+ 		    rank.setTable(dataMo, "Trung bình thời gian");
+ 		   rank.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	}
+    	else{   		
+    		for (Map.Entry<String,String> entry : datas.entrySet()) {
+    			int index = Integer.parseInt(entry.getKey());
+    				JSONObject a;
+    				try {
+    					a = (JSONObject) new JSONParser().parse(entry.getValue());
+    					Object[] tmp = new Object[4];
+    					tmp[0] = index ;
+    					tmp[1] = a.get("id");
+    					tmp[2] = a.get("name");
+    					tmp[3] = a.get("point");
+    					dataMo[index] = tmp; 
+    				} catch (ParseException e) {
+    					e.printStackTrace();
+    				}				
+        	}
+    		try {
+	            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+	                if ("Nimbus".equals(info.getName())) {
+	                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+	                    break;
+	                }
+	            }
+	        } catch (ClassNotFoundException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (InstantiationException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (IllegalAccessException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+	            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        }
+    		
+    		
+		    RankPage rank = new RankPage();
+		    rank.setVisible(true);
+		    rank.setLocationRelativeTo(null);
+		    rank.setTitle("rank");
+		    rank.setTable(dataMo, "Tổng điểm");
+		    rank.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	}
+		
+		
+		 
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
 
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton5;
 
 
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
-
+    public static void main(String[] args) {
+		HomePage d = new HomePage(new ClientSocket());
+		d.setVisible(true);
+		
+	}
 }

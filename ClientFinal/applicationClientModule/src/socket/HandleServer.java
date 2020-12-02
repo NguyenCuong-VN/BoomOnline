@@ -14,6 +14,7 @@ import org.json.simple.parser.ParseException;
 import src.util.DataGame;
 import src.util.TagName;
 import src.view.HomePage;
+import src.view.RankPage;
 import src.view.gameDoMin;
 
 
@@ -33,6 +34,7 @@ public class HandleServer extends Thread{
 			while ((message = is.readLine()) != null) {
 				try {
 					JSONObject data = (JSONObject) new JSONParser().parse(message);
+					
 					if(data.get("tag").equals(TagName.getUpdateUsers())){
 				    	//frame list user
 						
@@ -46,6 +48,7 @@ public class HandleServer extends Thread{
 					    	for(Object jsb : js){
 								if(jsb instanceof JSONObject){
 									JSONObject a = (JSONObject) jsb;
+									if(a.get("username").equals(this.clientSocket.getHomeFrame().getTitle())) continue;
 									Object[] tmp = new Object[4];
 									tmp[0] = a.get("id") ;
 									tmp[1] = a.get("name");
@@ -93,6 +96,22 @@ public class HandleServer extends Thread{
 						JOptionPane.showMessageDialog(this.clientSocket.getHomeFrame(), "Đối thủ không muốn chơi lại với bạn");
 					}
 					else if(data.get("tag").equals(TagName.getGameData())){
+						try {
+				            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+				                if ("Nimbus".equals(info.getName())) {
+				                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+				                    break;
+				                }
+				            }
+				        } catch (ClassNotFoundException ex) {
+				            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+				        } catch (InstantiationException ex) {
+				            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+				        } catch (IllegalAccessException ex) {
+				            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+				        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+				            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+				        }
 						System.out.println(data.get("idCompetitor"));
 						this.clientSocket.setGameFrame(new gameDoMin("Dò mìn online - "+ data.get("nameCompetitor"), 0, DataGame.convertToArray(data.get("datagame").toString()), this.clientSocket, data));
 						Thread gameThread = new Thread(this.clientSocket.getGameFrame());

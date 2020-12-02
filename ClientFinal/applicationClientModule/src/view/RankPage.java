@@ -17,6 +17,26 @@ public class RankPage extends javax.swing.JFrame {
     public RankPage() {
         initComponents();
     }
+    
+ // {"data":{"1":"{\"name\":\"cuong\",\"id\":1,\"point\":7}","2":"{\"name\":\"cuong2\",\"id\":2,\"point\":3}","3":"{\"name\":\"cuong3\",\"id\":3,\"point\":1}","4":"{\"name\":\"abcde\",\"id\":13,\"point\":1}","5":"{\"name\":\"abcdef\",\"id\":14,\"point\":0}","6":"{\"name\":\"abcdet\",\"id\":15,\"point\":0}","7":"{\"name\":\"abdfg\",\"id\":16,\"point\":0}","8":"{\"name\":\"abcdeg\",\"id\":17,\"point\":0}","9":"{\"name\":\"abcdeh\",\"id\":18,\"point\":0}","10":"{\"name\":\"abcdei\",\"id\":19,\"point\":0}"}}
+    public void setTable(Object[][] dataMo, String n){ 	    	
+    	
+    	jTable1.setModel(new javax.swing.table.DefaultTableModel(
+    			dataMo,
+                new String [] {
+    					"Hạng", "ID", "Tên", n
+                }
+            ) {
+                Class[] types = new Class [] {
+                    java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
+                };
+
+                public Class getColumnClass(int columnIndex) {
+                    return types [columnIndex];
+                }
+    	});
+        
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,13 +55,10 @@ public class RankPage extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Hạng", "ID", "Tên", "Điểm"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -74,43 +91,10 @@ public class RankPage extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RankPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new RankPage().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    public javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
