@@ -9,4 +9,4 @@
 ### Database:
 * MySQL
 
-* Thanks for view my first project! *
+*Thanks for view my first project!*
