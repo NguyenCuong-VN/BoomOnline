@@ -5,7 +5,7 @@
 * Java swing
 ### Back-end:
 * Java Socket
-* Jersey API
+* Java Jersey API
 ### Database:
 * MySQL
 
